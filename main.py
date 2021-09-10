@@ -25,7 +25,7 @@ from utils.metric import accuracy, ConfusionMatrix
 from utils.meter import AverageMeter, ProgressMeter
 from utils.logger import CompleteLogger
 from utils.analysis import collect_feature, tsne, a_distance
-from mcdropoututlis import get_mc_var, get_monte_carlo_predictions
+from mcdropout_utils import get_mc_var, get_monte_carlo_predictions
 from loss import NBCEWLoss, DomainAdversarialLoss, bias_loss
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

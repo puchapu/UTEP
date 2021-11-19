@@ -1,7 +1,7 @@
-# Implementation for **DTEP**
+# Implementation for **UTEP**
 
 ## Introduction
-This repo provides codes of Unifying Debiased Domain Adaptation via Uncertainty Variance Modelling.
+This repo provides codes of Learning Unbiased Transferability for Domain Adaptation via Uncertainty Modeling.
 
 **This implementation is based on [Transfer-Learning-Library](https://github.com/thuml/Transfer-Learning-Library)**
 

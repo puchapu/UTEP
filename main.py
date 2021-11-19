@@ -133,7 +133,6 @@ def main(args: argparse.Namespace):
         return
     num_src_samples = len(train_source_dataset)
     num_tar_samples = len(train_target_dataset)
-    print(num_src_samples,num_tar_samples)
     src_transferbility = []
     tar_transferbility = []
 
@@ -216,7 +215,8 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         domain_acc = domain_adv.domain_discriminator_accuracy
         entropy_loss = NBCEWLoss(nn.Softmax(dim=1)(y),od)
         src_var = get_monte_carlo_predictions(f_s, 3, domain_adv.domain_discriminator, 1,  32)
-        bias = bias_loss(src_var)
+        tar_var = get_monte_carlo_predictions(f_t, 3, domain_adv.domain_discriminator, 1,  32)
+        bias = 0.5 * (bias_loss(src_var) + bias_loss(tar_var))
         loss = cls_loss + transfer_loss * args.trade_off + entropy_loss + 0.0001 * bias
 
         cls_acc = accuracy(y_s, labels_s)[0]

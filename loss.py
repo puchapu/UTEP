@@ -7,8 +7,8 @@ from utils.metric import binary_accuracy
 from network import WarmStartGradientReverseLayer
 
 
-def bias_loss(src_variance):
-    return torch.mean(src_variance**2)
+def bias_loss(variance):
+    return torch.mean(variance**2)
 
 def NBCEWLoss(input_,od):
     batch_size = od.size(1)//2

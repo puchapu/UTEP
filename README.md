@@ -27,3 +27,4 @@ And run this for analysis
 ```
 python main.py /data/office31 -d Office31 -s A -t W -a resnet50 --epochs 20 --seed 1 --log logs/dann/Office31_A2W --phase phase
 ```
+In addition, you can get convergence curve and A-distance figure by plot.py.

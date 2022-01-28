@@ -1,3 +1,4 @@
+# from msilib.schema import Feature
 import torch
 import matplotlib
 
@@ -26,13 +27,12 @@ def visualize(source_feature: torch.Tensor, target_feature: torch.Tensor,
     features = np.concatenate([source_feature, target_feature], axis=0)
 
     # map features to 2-d using TSNE
-    f1 = TSNE(n_components=256, random_state=33).fit_transform(features)
-    X_tsne = TSNE(n_components=2, random_state=33).fit_transform(f1)
+    X_tsne = TSNE(n_components=2, random_state=33).fit_transform(features)
 
     # domain labels, 1 represents source while 0 represents target
     domains = np.concatenate((np.ones(len(source_feature)), np.zeros(len(target_feature))))
 
     # visualize using matplotlib
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(5, 5))
     plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=domains, cmap=col.ListedColormap([target_color, source_color]), s=2)
     plt.savefig(filename)

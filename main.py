@@ -189,12 +189,12 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         x_s, labels_s, index_s = next(train_source_iter)
         x_t, _, index_t = next(train_target_iter)
         if len(src_transferbility):
-            src_trans = (src_transferbility.view(-1,1)[index_s]).view(1,-1)
-            tar_trans = (tar_transferbility.view(-1,1)[index_t]).view(1,-1)
+            src_trans = (src_transferbility.view(-1,1)[index_s])
+            tar_trans = (tar_transferbility.view(-1,1)[index_t])
         else:
-            src_trans = torch.zeros(1, args.batch_size).cuda()
-            tar_trans = torch.zeros(1, args.batch_size).cuda()
-        od = torch.cat((src_trans, tar_trans), dim=1).cuda()
+            src_trans = torch.zeros(args.batch_size,).cuda()
+            tar_trans = torch.zeros(args.batch_size,).cuda()
+        od = torch.cat([src_trans, tar_trans], dim=0).cuda()
 
 
         x_s = x_s.to(device)
@@ -217,7 +217,7 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         src_var = get_monte_carlo_predictions(f_s, 3, domain_adv.domain_discriminator, 1,  32)
         tar_var = get_monte_carlo_predictions(f_t, 3, domain_adv.domain_discriminator, 1,  32)
         bias = 0.5 * (bias_loss(src_var) + bias_loss(tar_var))
-        loss = cls_loss + transfer_loss * args.trade_off + entropy_loss + 0.0001 * bias
+        loss = cls_loss + transfer_loss * args.trade_off + 0.0001 * bias + entropy_loss
 
         cls_acc = accuracy(y_s, labels_s)[0]
 

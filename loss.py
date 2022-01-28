@@ -10,33 +10,26 @@ from network import WarmStartGradientReverseLayer
 def bias_loss(variance):
     return torch.mean(variance**2)
 
-def NBCEWLoss(input_,od):
-    batch_size = od.size(1)//2
+def NBCEWLoss(input_, od, upper = 0.7, lower = 0.2):
+    batch_size = od.size(0)//2
+    mask = input_.ge(upper)
+    mask_hw = input_.le(lower)
     od = 1. - od
-    
-    od1 = torch.ones(1, batch_size).squeeze(0).cuda()
-    od2 = od[0,batch_size: 2 * batch_size]
-    od = torch.cat((od1,od2),dim=0).view(-1,1)
+    od[0: batch_size] = 1
+    od = od.view(-1,1).expand_as(mask)
 
-    mask = input_.ge(0.7)
-    mask_hw = input_.le(0.2)
-    od = od.expand_as(mask)
-    od_out = torch.masked_select(od, mask).detach()
-    od_out1 = torch.masked_select(od, mask_hw).detach()
-    mask_out = torch.masked_select(input_, mask) * od_out
-    mask_out1 = torch.masked_select(input_, mask_hw) * od_out1
+    mask_out = torch.masked_select(input_ * od, mask)
+    mask_out1 = torch.masked_select(input_ * od, mask_hw) 
     if len(mask_out) and not len(mask_out1):
         entropy = -(torch.sum(mask_out * torch.log(mask_out))) / float(mask_out.size(0))
-        return entropy
     elif len(mask_out1) and not len(mask_out):
-        entropy1 = -(torch.sum((1-mask_out1) * torch.log(1-mask_out1))) / float(mask_out1.size(0))
-        return entropy1
+        entropy = -(torch.sum((1-mask_out1) * torch.log(1-mask_out1))) / float(mask_out1.size(0))
     elif len(mask_out1) and len(mask_out):
-        entropy = -(torch.sum(mask_out * torch.log(mask_out))) / float(mask_out.size(0))
-        entropy1 = -(torch.sum((1 - mask_out1) * torch.log(1 - mask_out1))) / float(mask_out1.size(0))
-        return entropy + entropy1
+        entropy = -(torch.sum(mask_out * torch.log(mask_out))) / float(mask_out.size(0)) + \
+        -(torch.sum((1 - mask_out1) * torch.log(1 - mask_out1))) / float(mask_out1.size(0))
     else:
-        return torch.tensor(0.0).cuda()
+        entropy = torch.tensor(0.0).cuda()
+    return entropy
 
 class DomainAdversarialLoss(nn.Module):
     """
@@ -97,10 +90,10 @@ class DomainAdversarialLoss(nn.Module):
         d_label_s = torch.ones((f_s.size(0), 1)).to(f_s.device)
         d_label_t = torch.zeros((f_t.size(0), 1)).to(f_t.device)
         self.domain_discriminator_accuracy = 0.5 * (binary_accuracy(d_s, d_label_s) + binary_accuracy(d_t, d_label_t))
+        if w_s is None:
+            w_s = torch.zeros_like(d_label_s)
+        if w_t is None:
+            w_t = torch.zeros_like(d_label_t)
         w_s = 1 + w_s
         w_t = 1 + w_t
-        if w_s is None:
-            w_s = torch.ones_like(d_label_s)
-        if w_t is None:
-            w_t = torch.ones_like(d_label_t)
         return 0.5 * (self.bce(d_s, d_label_s, w_s.view_as(d_s)) + self.bce(d_t, d_label_t, w_t.view_as(d_t)))

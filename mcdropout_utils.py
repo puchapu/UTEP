@@ -11,28 +11,19 @@ def get_monte_carlo_predictions(feature,
                                 forward_passes,
                                 ad_net,
                                 d_classes,
-                                n_samples):
-    """ Function to get the monte-carlo samples and uncertainty estimates
-    through multiple forward passes
-    Parameters
-    ----------
-    inout_list : object
-        data loader object from the data loader module
-    forward_passes : int
-        number of monte-carlo samples/forward passes
-    adnet : object
-        keras model
-    n_classes : int
-        number of classes in the dataset
-    n_samples : int
-        number of samples in the test set
-    """
+                                n_samples, enable_sample):
     ad_net.eval()
     enable_dropout(ad_net)
     dropout_predictions = torch.empty((0, n_samples, d_classes)).cuda()
-    for _ in range(forward_passes):
-        ad_out = ad_net(feature).cuda()
-        dropout_predictions = torch.vstack((dropout_predictions, torch.unsqueeze(ad_out, 0))).cuda()
+    if enable_sample == False:
+        with torch.no_grad():
+            for _ in range(forward_passes):
+                ad_out = ad_net(feature).cuda()
+                dropout_predictions = torch.vstack((dropout_predictions, torch.unsqueeze(ad_out, 0))).cuda()
+    else:
+        for _ in range(forward_passes):
+            ad_out = ad_net(feature).cuda()
+            dropout_predictions = torch.vstack((dropout_predictions, torch.unsqueeze(ad_out, 0))).cuda()
 
     # Calculating variance across multiple MCD forward passes
     variance = torch.var(dropout_predictions, dim=0)  # shape (n_samples, n_class
@@ -58,8 +49,8 @@ def get_mc_var(src_loader, tar_loader, base_network, ad_net, num_src_samples, nu
     del src_features_list
     del tar_features_list
 ################################## run 10 forward for mcdropout #####################################################
-    src_variance = get_monte_carlo_predictions(src_features, 10, ad_net, 1,  num_src_samples)
-    tar_variance = get_monte_carlo_predictions(tar_features, 10, ad_net, 1,  num_tar_samples)
+    src_variance = get_monte_carlo_predictions(src_features, 10, ad_net, 1,  num_src_samples, False)
+    tar_variance = get_monte_carlo_predictions(tar_features, 10, ad_net, 1,  num_tar_samples, False)
 
 ################################### normalize all the variance #################################################
     src_transferbility = (src_variance - torch.min(src_variance)) / torch.max(src_variance)

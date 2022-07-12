@@ -214,10 +214,10 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         transfer_loss = domain_adv(f_s,f_t,src_trans,tar_trans)
         domain_acc = domain_adv.domain_discriminator_accuracy
         entropy_loss = NBCEWLoss(nn.Softmax(dim=1)(y),od)
-        src_var = get_monte_carlo_predictions(f_s, 3, domain_adv.domain_discriminator, 1,  32)
-        tar_var = get_monte_carlo_predictions(f_t, 3, domain_adv.domain_discriminator, 1,  32)
+        src_var = get_monte_carlo_predictions(f_s, 3, domain_adv.domain_discriminator, 1,  32, True)
+        tar_var = get_monte_carlo_predictions(f_t, 3, domain_adv.domain_discriminator, 1,  32, True)
         bias = 0.5 * (bias_loss(src_var) + bias_loss(tar_var))
-        loss = cls_loss + transfer_loss * args.trade_off + 0.0001 * bias + entropy_loss
+        loss = cls_loss + transfer_loss * args.trade_off + 0.4 * float(epoch)/args.epochs * bias + entropy_loss
 
         cls_acc = accuracy(y_s, labels_s)[0]
 
@@ -354,4 +354,3 @@ if __name__ == '__main__':
                              "When phase is 'analysis', only analysis the model.")
     args = parser.parse_args()
     main(args)
-

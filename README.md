@@ -1,7 +1,7 @@
 # Implementation for **UTEP**
 
 ## Introduction
-This repo provides codes of Learning Unbiased Transferability for Domain Adaptation via Uncertainty Modeling.
+This repo provides codes of [Learning Unbiased Transferability for Domain Adaptation via Uncertainty Modeling](https://arxiv.org/pdf/2206.01319.pdf).
 
 **This implementation is based on [Transfer-Learning-Library](https://github.com/thuml/Transfer-Learning-Library)**
 

@@ -27,3 +27,12 @@ And run this for analysis
 ```
 python main.py /data/office31 -d Office31 -s A -t W -a resnet50 --epochs 20 --seed 1 --log logs/dann/Office31_A2W --phase analysis
 ```
+If you are interested in our work and want to cite it, you can cite it as
+```
+@article{hu2022learning,
+  title={Learning Unbiased Transferability for Domain Adaptation by Uncertainty Modeling},
+  author={Hu, Jian and Zhong, Haowen and Yan, Junchi and Gong, Shaogang and Wu, Guile and Yang, Fei},
+  journal={arXiv preprint arXiv:2206.01319},
+  year={2022}
+}
+```

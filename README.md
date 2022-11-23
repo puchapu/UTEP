@@ -29,10 +29,12 @@ python main.py /data/office31 -d Office31 -s A -t W -a resnet50 --epochs 20 --se
 ```
 If you are interested in our work and want to cite it, you can cite it as
 ```
-@article{hu2022learning,
+@inproceedings{hu2022learning,
   title={Learning Unbiased Transferability for Domain Adaptation by Uncertainty Modeling},
-  author={Hu, Jian and Zhong, Haowen and Yan, Junchi and Gong, Shaogang and Wu, Guile and Yang, Fei},
-  journal={arXiv preprint arXiv:2206.01319},
-  year={2022}
+  author={Hu, Jian and Zhong, Haowen and Yang, Fei and Gong, Shaogang and Wu, Guile and Yan, Junchi},
+  booktitle={European Conference on Computer Vision},
+  pages={223--241},
+  year={2022},
+  organization={Springer}
 }
 ```
